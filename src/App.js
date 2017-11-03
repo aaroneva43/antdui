@@ -26,9 +26,11 @@ import {
 import Login from './Login'
 import SimpleForm from './SimpleForm'
 
+import routes from './routes'
 
 
-const history = createHistory()
+
+const history = createHistory({ basename: '/ui' })
 const sagaMiddleware = createSagaMiddleware()
 const middleware = [routerMiddleware(history), sagaMiddleware]
 
@@ -44,21 +46,8 @@ class App extends Component {
   render() {
     return (
       <Provider store={store}>
-        <ConnectedRouter basename="/somedir" history={history}>
-          <div>
-            <Route path="/login" render={({ location }) => {
-              return createElement(Login, {
-                location
-
-              })
-            }} />
-            <Route path="/simpleform" render={({ location }) => {
-              return createElement(SimpleForm, {
-                location
-
-              })
-            }} />
-          </div>
+        <ConnectedRouter history={history}>
+          {routes}
         </ConnectedRouter>
       </Provider>
     )

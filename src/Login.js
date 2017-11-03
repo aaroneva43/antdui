@@ -19,7 +19,7 @@ import {
   Link
 } from 'react-router-dom'
 
-import { userLogin as userLoginAction } from './actions'
+import { login } from './actions'
 
 import Input from './utils/antd-redux-form'
 
@@ -67,31 +67,6 @@ const styles = {
   }
 }
 
-// const renderInput = (field) => {
-
-//   return (
-
-//     <div className="input-row">
-//       <input {...field.input} type="text" value={field.value} />
-//       {field.meta.touched && field.meta.error &&
-//         <span className="error">{field.meta.error}</span>}
-//     </div>
-
-//   )
-// }
-
-const renderInput = ({ meta: { touched, error }, input, ...props }) => {
-
-  return (
-    <Input
-      label={props.label}
-      helperText={touched && error}
-      {...input}
-      fullWidth
-    />
-  )
-}
-
 
 class Login extends Component {
 
@@ -100,12 +75,12 @@ class Login extends Component {
     theme: PropTypes.object.isRequired,
     previousRoute: PropTypes.string,
     // translate: PropTypes.func.isRequired,
-    userLogin: PropTypes.func.isRequired
+    login: PropTypes.func.isRequired
   }
 
-  login = ({ username, password }) => {
-    const { userLogin, location } = this.props;
-    userLogin({ username, password }, location.state ? location.state.nextPathname : '/');
+  submit = ({ username, password }) => {
+    const { login, location } = this.props;debugger;
+    login({ username, password }, location.state ? location.state.nextPathname : '/');
   }
 
   render() {
@@ -119,13 +94,14 @@ class Login extends Component {
             <span style={{ fontWeight: 'bold', color: 'darkgreen', fontSize: 20 }}>SDWAN </span>
             <span style={{ fontWeight: 'normal', color: '#333', fontSize: 14 }}>v0.0.1 </span>
           </div>
-          <form onSubmit={handleSubmit(this.login)}>
+          <form onSubmit={handleSubmit(this.submit)}>
             <div style={styles.form}>
               <div style={styles.input} >
                 <Field
                   name="username"
                   component={Input}
                   placeholder={'username'}
+                  autoFocus={true}
                 />
               </div>
               <div style={styles.input}>
@@ -148,6 +124,7 @@ class Login extends Component {
 }
 
 const enhance = compose(
+  // decorate with redux-form
   reduxForm({
     form: 'login',
     validate: (values, props) => {
@@ -158,7 +135,8 @@ const enhance = compose(
       return errors
     }
   }),
-  connect(null, { userLogin: userLoginAction })
+  // connect to store
+  connect(null, { login: login })
 )
 
 export default enhance(Login)

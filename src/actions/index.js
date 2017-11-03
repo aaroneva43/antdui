@@ -1,5 +1,6 @@
-export const userLogin = (payload, pathName) => ({
-    type: 'USER_LOGIN',
-    payload,
-    meta: { auth: true, pathName },
+import * as actions from './actionTypes'
+
+export const login = (payload) => ({
+    type: actions.LOGIN,
+    payload
 });

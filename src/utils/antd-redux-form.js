@@ -27,7 +27,7 @@ const makeField = Component => ({ input, meta, children, hasFeedback, label, ...
             hasFeedback={hasFeedback && hasError}
             help={hasError && meta.error}
         >
-            <Component {...input} {...rest} children={children} value={input.value || ''} />
+            <Component {...input} children={children} value={input.value || ''} {...rest} />
         </FormItem>
     )
 }

@@ -1,31 +1,35 @@
 import { takeEvery } from 'redux-saga/effects'
-import { put, push, call, take, fork, cancel, cancelled } from 'redux-saga/effects'
+import { put, call, take, fork, cancel, cancelled } from 'redux-saga/effects'
+import cookie from 'js-cookie'
+
+import { PENDING, SUCCESS, FAILURE } from '../actions/actionTypes'
+import * as actions from '../actions/actionTypes'
+import api from '../api'
 
 
 
 export default function* sagas() {
-    yield takeEvery("USER_LOGIN", function* (action) {
+    yield takeEvery(actions.LOGIN, function* (action) {
 
         try {
-            put({ type: "USER_LOGIN_LOADING" })
+            put({ type: `${actions.LOGIN}/${PENDING}` })
 
             const { username, password } = action.payload
 
+            const res = yield call(api.auth, { params: { username: username, password: password } })
 
-            if (username == password) {
-                localStorage.setItem('username', username)
-                yield put({
-                    type: 'USER_LOGIN_SUCCESS'
-                })
+            if (res.success == true) {
 
-                yield put(push('/'))
+                cookie.set('token', res.result)
+                yield put({ type: `${actions.LOGIN}/${SUCCESS}` })
+
+                // yield put(push('/'))
 
                 return Promise.resolve()
 
             } else {
                 yield put({
-                    type: 'USER_LOGIN_FAILURE',
-                    meta: { auth: true },
+                    type: `${actions.LOGIN}/${FAILURE}`
                 });
             }
 
