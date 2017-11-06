@@ -14,7 +14,12 @@ export default {
         return fetch(`${API_BASE}/${cfg.entry}?${utils.serializeParams(cfg.params)}`).then(response => response.json())
     },
     auth: (cfg) => {
-        return fetch(`${API_BASE}/auth`, { method: 'POST', body: cfg.params || {} })
+        return fetch(`${API_BASE}/auth`, {
+            method: 'POST',
+            headers: new Headers({ 'content-type': 'application/json' }),
+            mode: 'no-cors',
+            body: JSON.stringify({ a: 1, b: 2 })
+        })
             .then(response => response.json())
     }
 }

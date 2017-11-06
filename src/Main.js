@@ -21,6 +21,8 @@ import * as auth from './actions/auth'
 class Main extends Component {
 
   static PropTypes = {
+    dispatch: PropTypes.func.isRequired,
+    checkAuth: PropTypes.func.isRequired
   }
 
   submit = ({ username, password }) => {
@@ -33,7 +35,6 @@ class Main extends Component {
   render() {
     const { dispatch, checkAuth } = this.props
 
-    console.log(dispatch)
 
     dispatch(checkAuth())
 
@@ -52,7 +53,7 @@ const enhance = compose(
   //   form: 'sssss'
   // }),
   // connect to store
-  connect(null, { checkAuth: auth.check })
+  connect(null, (dispatch, ownProps) => { return { checkAuth: auth.check, dispatch: dispatch } })
 )
 
 export default enhance(Main)

@@ -6,6 +6,7 @@ import path from 'path';
 import fs from 'fs';
 import _ from 'lodash';
 import { chalkSuccess } from './chalkConfig';
+import bodyParser from 'body-parser'
 
 let server = null;
 const db = './tools/db.json';
@@ -20,12 +21,20 @@ function isAuthorized(req) {
 
 function start() {
     const app = jsonServer.create();
+    app.use(bodyParser.json());
     app.use(middlewares);
+
+    // app.post('/api/v1/auth', function (req, res, next) {
+    //     console.log(req)
+    //     next()
+    // })
     app.use(function (req, res, next) {
         if (req.originalUrl == "/api/v1/auth") {
+            console.log(req)
 
-            if (req.method == 'POST') {
-                return res.send({ success: true, result: '7xPJPuVfTse2pFHc5Pfu' })
+            if (req.method == 'POST' && req.body.token == '7xPJPuVfTse2pFHc5Pfu') {
+
+                return res.send({ success: true, result: { token: '7xPJPuVfTse2pFHc5Pfu' } })
             }
             return res.send({
                 access_token: token

@@ -1,11 +1,11 @@
-import * as actions from './actionTypes'
+import { AUTH, LOGIN } from './actionTypes'
 import cookie from 'js-cookie'
 export const login = (payload) => ({
-    type: actions.LOGIN,
+    type: LOGIN,
     payload
 })
 
 export const check = (payload) => ({
-    type: actions.AUTH,
+    type: AUTH,
     payload: { token: cookie.get('token') }
 })
