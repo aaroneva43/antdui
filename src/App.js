@@ -28,6 +28,7 @@ import SimpleForm from './SimpleForm'
 
 import routes from './routes'
 
+import { getStatics } from './actions/statics'
 
 
 const history = createHistory({ basename: '/ui' })
@@ -41,6 +42,14 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(reducers, composeEnhancers(applyMiddleware(...middleware)))
 
 sagaMiddleware.run(sagas)
+
+// load statics
+store.dispatch(
+  getStatics([
+    'statics/config_data/manual/menu.json',
+    'statics/config_data/manual/menu_pieces.json'
+  ])
+)
 
 class App extends Component {
   render() {

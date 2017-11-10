@@ -1,0 +1,129 @@
+{
+    "log_browsing": [
+        {
+            "name": "event_log",
+            "text": "Event Log",
+            "children": [
+                {
+                    "name": "history_log_config",
+                    "text": "Configuration",
+                    "widget": "HistoryLogShow",
+                    "type": "event",
+                    "subType": "config"
+                },
+                {
+                    "name": "history_log_system",
+                    "text": "System",
+                    "widget": "HistoryLogShow",
+                    "type": "event",
+                    "subType": "system"
+                },
+                {
+                    "name": "history_log_admin",
+                    "text": "Admin",
+                    "widget": "HistoryLogShow",
+                    "type": "event",
+                    "subType": "admin"
+                },
+                {
+                    "name": "history_log_app",
+                    "text": "Application",
+                    "widget": "HistoryLogShow",
+                    "type": "event",
+                    "subType": "app"
+                }
+            ]
+        },
+        {
+            "name": "attack_log",
+            "text": "Security Log",
+            "children": [
+                {
+                    "name": "history_log_ip_reputation",
+                    "text": "IP Reputation",
+                    "widget": "HistoryLogShow",
+                    "type": "attack",
+                    "subType": "ip_reputation"
+                },
+                {
+                    "name": "history_log_synflood",
+                    "text": "DoS",
+                    "widget": "HistoryLogShow",
+                    "type": "attack",
+                    "subType": "synflood"
+                }
+            ]
+        },
+        {
+            "name": "traffic_log",
+            "text": "Traffic Log",
+            "children": [
+                {
+                    "name": "history_log_slb_layer4",
+                    "text": "SLB Layer 4",
+                    "widget": "HistoryLogShow",
+                    "type": "traffic",
+                    "subType": "slb_layer4"
+                },
+                {
+                    "name": "history_log_slb_http",
+                    "text": "SLB HTTP",
+                    "widget": "HistoryLogShow",
+                    "type": "traffic",
+                    "subType": "slb_http"
+                },
+                {
+                    "name": "history_log_slb_tcps",
+                    "text": "SLB TCPS",
+                    "widget": "HistoryLogShow",
+                    "type": "traffic",
+                    "subType": "slb_tcps"
+                },
+                {
+                    "name": "history_log_slb_rdp",
+                    "text": "SLB RDP",
+                    "widget": "HistoryLogShow",
+                    "type": "traffic",
+                    "subType": "slb_rdp"
+                },
+                {
+                    "name": "history_log_slb_radius",
+                    "text": "SLB RADIUS",
+                    "widget": "HistoryLogShow",
+                    "type": "traffic",
+                    "subType": "slb_radius"
+                },
+                {
+                    "name": "history_log_slb_dns",
+                    "text": "GLB",
+                    "widget": "HistoryLogShow",
+                    "type": "traffic",
+                    "subType": "slb_dns"
+                }
+            ]
+        }
+    ],
+    "audit": [
+        {
+            "name": "slb",
+            "text": "Server Load Balance",
+            "widget": "HistoryAuditServerLoadBalance"
+        },
+        {
+            "name": "llb",
+            "text": "Link Load Balance",
+            "widget": "HistoryAuditLinkLoadBalance"
+        },
+        {
+            "name": "glb",
+            "text": "Global Load Balance",
+            "widget": "HistoryAuditGlobalLoadBalance"
+        },
+        {
+            "name": "attack",
+            "text": "Security",
+            "widget": "HistoryAuditAttack"
+        }
+    ]
+
+}

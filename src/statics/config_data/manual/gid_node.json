@@ -1,0 +1,19 @@
+{
+    "91": {
+        "help": "virtual domains",
+        "nodetype": "TABLE",
+        "range": "GLOBAL",
+        "name": "vdom",
+        "gid": "91",
+        "path": ""
+    },
+    "92": {
+        "help": "virtual domain name",
+        "parentGid": "91",
+        "nodetype": "TABLENAME",
+        "name": "name",
+        "gid": "92",
+        "property": "STRING",
+        "validate": "REGEX:^[A-Za-z0-9_\\ \\-]*$"
+    }
+}

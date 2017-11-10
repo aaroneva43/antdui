@@ -8,10 +8,11 @@ import compose from 'recompose/compose'
 
 import { Card, Button, Form } from 'antd'
 
+import * as ant from 'antd'
 
+import _ from 'lodash'
 
-
-
+import style from './Login.css'
 
 import {
   Router,
@@ -21,8 +22,13 @@ import {
 
 import { login } from './actions'
 
-import Input from './utils/antd-redux-form'
+import antdFields from './utils/antd-redux-form'
+const Input = antdFields.Input
+const Select = antdFields.Select
+const Option = antdFields.Option
 
+const AntSelect = ant.Select
+const AntOption = AntSelect.Option
 
 const styles = {
   main: {
@@ -33,7 +39,7 @@ const styles = {
     justifyContent: 'center',
   },
   card: {
-    minWidth: 300,
+    minWidth: 600,
     border: 0
   },
   avatar: {
@@ -73,14 +79,15 @@ class Login extends Component {
   static PropTypes = {
     ...reduxFormPropTypes,
     theme: PropTypes.object.isRequired,
-    previousRoute: PropTypes.string,
     // translate: PropTypes.func.isRequired,
-    login: PropTypes.func.isRequired
+    login: PropTypes.func.isRequired,
+    // state object
+    auth: PropTypes.object.isRequired
   }
 
   submit = ({ username, password }) => {
-    const { login, location } = this.props;debugger;
-    login({ username, password }, location.state ? location.state.nextPathname : '/');
+    const { login, location } = this.props;
+    login({ username, password });
   }
 
   render() {
@@ -112,6 +119,20 @@ class Login extends Component {
                   type="password"
                 />
               </div>
+              {/* <div style={styles.input}>
+                <Field
+                  name="sss"
+                  defaultValue="jack"
+                  component={Select}
+                  style={{ width: 200 }}
+
+                >
+                  <Option value="jack">Jack</Option>
+                  <Option value="ccc" className={style.addNewItem}>Ccc</Option>
+                  <Option value="fff" style={{ backgroundColor: 'pink' }} className={style.addNewItem} aria-disabled={true} > <a>NEW</a> </Option>
+                </Field>
+              </div> */}
+              
               <Button style={styles.button} htmlType="submit" disabled={submitting} children={'Sign In'} />
             </div>
 
@@ -136,7 +157,11 @@ const enhance = compose(
     }
   }),
   // connect to store
-  connect(null, { login: login })
+  connect(
+    (state) => ({
+      submitting: _.get(state, 'auth.pending', false)
+    })
+    , { login: login })
 )
 
 export default enhance(Login)

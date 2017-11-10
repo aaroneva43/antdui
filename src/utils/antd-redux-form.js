@@ -6,7 +6,7 @@ const RadioGroup = Radio.Group
 const { Option } = Select
 const { TextArea } = Input
 
-const makeField = Component => ({ input, meta, children, hasFeedback, label, ...rest }) => {
+const makeField = Component => ({ input: { value, ...otherInput }, meta, children, hasFeedback, label, ...rest }) => {
     const hasError = meta.touched && meta.invalid
     const formItemLayout = {
         labelCol: {
@@ -27,9 +27,13 @@ const makeField = Component => ({ input, meta, children, hasFeedback, label, ...
             hasFeedback={hasFeedback && hasError}
             help={hasError && meta.error}
         >
-            <Component {...input} children={children} value={input.value || ''} {...rest} />
+            <Component {...otherInput} children={children} {...rest} />
         </FormItem>
     )
 }
 
-export default makeField(Input)
+export default {
+    Input: makeField(Input),
+    Select: makeField(Select),
+    Option: Option
+}

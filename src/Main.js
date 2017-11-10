@@ -5,9 +5,7 @@ import { connect } from 'react-redux';
 
 
 import compose from 'recompose/compose'
-
-import { Card, Button, Form } from 'antd'
-
+import _ from 'lodash'
 
 
 
@@ -17,12 +15,17 @@ import { Link } from 'react-router-dom'
 
 import * as auth from './actions/auth'
 
+import GlobalMask from './components/GlobalMask';
+
+import Login from './Login'
+import Nav from './components/Nav'
 
 class Main extends Component {
 
   static PropTypes = {
     dispatch: PropTypes.func.isRequired,
-    checkAuth: PropTypes.func.isRequired
+    checkAuth: PropTypes.func.isRequired,
+    auth: PropTypes.object.isRequired
   }
 
   submit = ({ username, password }) => {
@@ -32,15 +35,25 @@ class Main extends Component {
     login({ username, password }, location.state ? location.state.nextPathname : '/');
   }
 
-  render() {
+  componentDidMount() {
     const { dispatch, checkAuth } = this.props
-
-
     dispatch(checkAuth())
 
+  }
+
+  render() {
+
+    const { auth, location, menu } = this.props
+
     return (
-      <div>
-        Main
+      <div >
+        {(auth.pending) && <GlobalMask size='large' />}
+        {(!auth.pending && !auth.authed) ? <Login /> : <div>
+          <Nav
+            location={location}
+            menuData={menu}
+          />Main</div>}
+
       </div>
 
     )
@@ -48,12 +61,15 @@ class Main extends Component {
 }
 
 const enhance = compose(
-  // decorate with redux-form
-  // reduxForm({
-  //   form: 'sssss'
-  // }),
   // connect to store
-  connect(null, (dispatch, ownProps) => { return { checkAuth: auth.check, dispatch: dispatch } })
+  connect(
+    (state) => {
+      return { auth: _.get(state, 'auth', false), menu: state.statics.menu_data }
+    },
+    (dispatch) => {
+      return { checkAuth: auth.check, dispatch: dispatch }
+    }
+  )
 )
 
 export default enhance(Main)

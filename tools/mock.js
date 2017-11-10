@@ -21,34 +21,40 @@ function isAuthorized(req) {
 
 function start() {
     const app = jsonServer.create();
-    app.use(bodyParser.json());
     app.use(middlewares);
 
-    // app.post('/api/v1/auth', function (req, res, next) {
-    //     console.log(req)
-    //     next()
-    // })
+
     app.use(function (req, res, next) {
-        if (req.originalUrl == "/api/v1/auth") {
-            console.log(req)
+        if (/.*\.json$/.test(req.originalUrl)) {
 
-            if (req.method == 'POST' && req.body.token == '7xPJPuVfTse2pFHc5Pfu') {
-
-                return res.send({ success: true, result: { token: '7xPJPuVfTse2pFHc5Pfu' } })
-            }
-            return res.send({
-                access_token: token
-            });
+            return res.send({ success: true, result: JSON.parse(fs.readFileSync('./src/' + req.originalUrl.replace('/api/v1/', ''))) })
         }
 
-        if (/\/db.*/.test(req.originalUrl) || true/* isAuthorized(req) */) { // add your authorization logic here
-            // continue to Mock Server router
+        next()
+        // if (/\/db.*/.test(req.originalUrl) || true/* isAuthorized(req) */) { // add your authorization logic here
+        //     // continue to Mock Server router
 
-            next()
+        //     next()
 
+        // } else {
+        //     res.sendStatus(401);
+        // }
+    });
+
+    app.post('/api/v1/auth', function (req, res) {
+        if (req.body.token == '7xPJPuVfTse2pFHc5Pfu') {
+            res.send({ success: true, result: {} })
         } else {
-            res.sendStatus(401);
+            setTimeout(() => { res.send({ success: false, result: {} }) }, 800)
         }
+
+
+    });
+
+    app.post('/api/v1/login', function (req, res) {
+        console.log(req.body)
+        res.send({ success: true, result: { token: '7xPJPuVfTse2pFHc5Pfu' } })
+
     });
     // Add this before app.use(router)
     app.use(jsonServer.rewriter({

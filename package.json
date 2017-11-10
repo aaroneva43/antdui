@@ -64,7 +64,9 @@
     "start": "node scripts/start.js && babel-node tools/mock.js",
     "build": "node scripts/build.js",
     "start:mock": "babel-node tools/mock.js",
-    "test": "node scripts/test.js --env=jsdom"
+    "test": "node scripts/test.js --env=jsdom",
+    "build-css": "node-sass-chokidar src/ -o src/",
+    "watch-css": "npm run build-css && node-sass-chokidar src/ -o src/ --watch --recursive"
   },
   "jest": {
     "collectCoverageFrom": [
@@ -118,6 +120,9 @@
     "chokidar": "^1.7.0",
     "fs": "^0.0.1-security",
     "json-server": "^0.12.1",
+    "less": "^2.7.3",
+    "less-loader": "^4.0.5",
+    "node-sass-chokidar": "^0.0.3",
     "path": "^0.12.7",
     "server-destroy": "^1.0.1"
   }
