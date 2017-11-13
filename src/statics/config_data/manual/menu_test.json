@@ -1,0 +1,25 @@
+{
+  "vdom_disabled": [
+    "slb",
+    "resources"
+  ],
+  "super_admin": [
+    "vdom",
+    "super_admin_system",
+    "super_admin_networking"
+  ],
+  "vdom_user": [
+    "status",
+    "view",
+    "vdom_user_system",
+    "resources",
+    "networking",
+    "slb",
+    "llb",
+    "glb",
+    "waf",
+    "user",
+    "security",
+    "history"
+  ]
+}

@@ -15,8 +15,45 @@ export const getStatics = (url) => ({
 
 export const getMenu = (menu, menuPieces) => ({
     type: GET_MENU,
-    payload: generateMenuData(menu, menuPieces)
+    payload: generateMenuData1(menu, menuPieces)
 })
+
+const generateMenuData1 = (menu, menuPieces) => {
+
+    const makeMenu = (obj, url) => {
+        let o = {}
+
+        o.name = obj.name
+        o.label = obj.label
+
+        try {
+            if (!obj.widget || !obj.gid || obj.widget == 'MultipleModulesConfig') {  // is catagory
+                o.cat = true
+                o.url = url + '/' + (_.get(obj, 'modules[0]') || _.get(obj, 'children[0]') || {})['name'] || ''
+            } else {
+                o.url = url + '/' + obj.name
+            }
+
+            let children = obj.modules || obj.children || []
+
+            if (children.length) {
+                o.children = children.map((itm) => { return makeMenu(itm, o.url) })
+            }
+        } catch (e) {
+            console.error(e)
+        }
+
+        return o
+    }
+
+    let menuData = []
+
+    menu.vdom_disabled.forEach(function (prop) {
+        menuData.push(makeMenu(menuPieces[prop], 'config'))
+    })
+
+    return menuData
+}
 
 const generateMenuData = (menu, menuPieces) => {
     let uiData = []

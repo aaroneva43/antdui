@@ -81,8 +81,8 @@ export default function* sagas() {
             yield put({ type: `${GET_STATICS}/${SUCCESS}`, payload: statics })
 
             // generate menu_data
-            if (statics.menu && statics.menu_pieces) {
-                yield put(getMenu(statics.menu, statics.menu_pieces))
+            if (statics.menu_test && statics.menu_pieces) {
+                yield put(getMenu(statics.menu_test, statics.menu_pieces))
             } else {
                 console.error('menu generation failed')
             }

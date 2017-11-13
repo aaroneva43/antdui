@@ -46,7 +46,8 @@ sagaMiddleware.run(sagas)
 // load statics
 store.dispatch(
   getStatics([
-    'statics/config_data/manual/menu.json',
+    // 'statics/config_data/manual/menu.json',
+    'statics/config_data/manual/menu_test.json',
     'statics/config_data/manual/menu_pieces.json'
   ])
 )
