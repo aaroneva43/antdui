@@ -27,11 +27,12 @@ const generateMenuData1 = (menu, menuPieces) => {
         o.label = obj.label
 
         try {
-            if (!obj.widget || !obj.gid || obj.widget == 'MultipleModulesConfig') {  // is catagory
+            if ((!obj.widget && !obj.gid) || obj.widget == 'MultipleModulesConfig') {  // is catagory
                 o.cat = true
-                o.url = url + '/' + (_.get(obj, 'modules[0]') || _.get(obj, 'children[0]') || {})['name'] || ''
+                o.url = url + '/' + ((_.get(obj, 'modules[0]') || _.get(obj, 'children[0]') || {})['name'] || '')
             } else {
                 o.url = url + '/' + obj.name
+                o.isModule = true
             }
 
             let children = obj.modules || obj.children || []
@@ -39,6 +40,7 @@ const generateMenuData1 = (menu, menuPieces) => {
             if (children.length) {
                 o.children = children.map((itm) => { return makeMenu(itm, o.url) })
             }
+
         } catch (e) {
             console.error(e)
         }

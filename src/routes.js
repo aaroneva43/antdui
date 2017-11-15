@@ -6,12 +6,15 @@ import App from './containers/App'
 
 import Login from './Login'
 import Main from './Main'
+import Foo from './Foo'
+import Foo1 from './Foo1'
+
 import SimpleForm from './SimpleForm'
 import Users from './Users'
 
 export default (
     <div>
-        <Route path="/" render={({ location }) => { return createElement(Main, { location }) }} >
+        <Route path="/" exact render={({ location }) => { return createElement(Main, { location }) }} >
             {/* <IndexRoute component={SimpleForm} /> */}
             {/* <Route path="users" component={Users} /> */}
         </Route>
@@ -21,5 +24,8 @@ export default (
 
             })
         }} /> */}
+
+        {/* <Route path="/slb/:id" exact render={({ history, location, match }) => { return createElement(Foo, { location }) }} />
+        <Route path="/llb/@@new@@" exact render={({ history, location, match }) => { debugger; return createElement(Foo1, { location }) }} /> */}
     </div>
 )

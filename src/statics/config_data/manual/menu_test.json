@@ -1,5 +1,6 @@
 {
   "vdom_disabled": [
+    "super_admin_system",
     "slb",
     "resources"
   ],

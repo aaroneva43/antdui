@@ -71,7 +71,7 @@ class Foo extends Component {
 const enhance = compose(
   // decorate with redux-form
   reduxForm({
-    form: 'f',
+    form: 'f1',
     validate: (values, props) => {
 
       const errors = {}
