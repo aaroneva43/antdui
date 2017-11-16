@@ -20,16 +20,18 @@ export const getMenu = (menu, menuPieces) => ({
 
 const generateMenuData1 = (menu, menuPieces) => {
 
-    const makeMenu = (obj, url) => {
+    const makeMenu = (obj, url, depth) => {
         let o = {}
 
         o.name = obj.name
         o.label = obj.label
+        o.depth = depth || (obj.depth === undefined ? 0 : obj.depth)
 
         try {
             if ((!obj.widget && !obj.gid) || obj.widget == 'MultipleModulesConfig') {  // is catagory
                 o.cat = true
-                o.url = url + '/' + ((_.get(obj, 'modules[0]') || _.get(obj, 'children[0]') || {})['name'] || '')
+                o.url = url + '/' + obj.name //((_.get(obj, 'modules[0]') || _.get(obj, 'children[0]') || {})['name'] || '')
+
             } else {
                 o.url = url + '/' + obj.name
                 o.isModule = true
@@ -38,7 +40,7 @@ const generateMenuData1 = (menu, menuPieces) => {
             let children = obj.modules || obj.children || []
 
             if (children.length) {
-                o.children = children.map((itm) => { return makeMenu(itm, o.url) })
+                o.children = children.map((itm) => { return makeMenu(itm, o.url,  o.depth + 1) })
             }
 
         } catch (e) {
