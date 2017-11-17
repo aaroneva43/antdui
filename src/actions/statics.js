@@ -20,41 +20,16 @@ export const getMenu = (menu, menuPieces) => ({
 
 const generateMenuData1 = (menu, menuPieces) => {
 
-    const makeMenu = (obj, url, depth) => {
-        let o = {}
+    const menuData = []
 
-        o.name = obj.name
-        o.label = obj.label
-        o.depth = depth || (obj.depth === undefined ? 0 : obj.depth)
+    try {
+        menu['vdom_disabled'].forEach((itm) => {
+            menuData.push(menuPieces[itm])
+        })
 
-        try {
-            if ((!obj.widget && !obj.gid) || obj.widget == 'MultipleModulesConfig') {  // is catagory
-                o.cat = true
-                o.url = url + '/' + obj.name //((_.get(obj, 'modules[0]') || _.get(obj, 'children[0]') || {})['name'] || '')
-
-            } else {
-                o.url = url + '/' + obj.name
-                o.isModule = true
-            }
-
-            let children = obj.modules || obj.children || []
-
-            if (children.length) {
-                o.children = children.map((itm) => { return makeMenu(itm, o.url,  o.depth + 1) })
-            }
-
-        } catch (e) {
-            console.error(e)
-        }
-
-        return o
+    } catch (error) {
+        console.error(error)
     }
-
-    let menuData = []
-
-    menu.vdom_disabled.forEach(function (prop) {
-        menuData.push(makeMenu(menuPieces[prop], 'config'))
-    })
 
     return menuData
 }

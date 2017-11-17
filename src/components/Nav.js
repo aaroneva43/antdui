@@ -5,6 +5,8 @@ import PropTypes from 'prop-types'
 import { Menu, Dropdown, Icon, message } from 'antd'
 import { Link } from 'react-router-dom'
 
+import style from './Nav.css'
+
 
 import _ from 'lodash'
 
@@ -17,7 +19,7 @@ class Nav extends React.PureComponent {
         menuData: PropTypes.array
     }
 
-    currentPath = []
+    // defaultPath = '/super_admin_system/administrator/admin'
 
     getCurrentPath(location) {
         // if (!location || !menuData || !menuData.length) return []
@@ -60,20 +62,110 @@ class Nav extends React.PureComponent {
 
     }
 
-    renderMenu(menu) {
-        let me = this
 
-        if (menu.depth === 0) {
-            return (
-                <SubMenu title={<span><Icon type="setting" />{}</span>}>
-                    <Menu.Item key="setting:1">Option 1</Menu.Item>
-                    <Menu.Item key="setting:2"><Link to='http://www.baidu.com'>dddddddDDD</Link></Menu.Item>
-                </SubMenu>
-            )
+    /**
+     * prepare menu data for renderring
+     * @param {Array} menuData 
+     * @param {String} selectedPath 
+     */
+    decorateMenuData(menuData, selectedPath) {
+
+        if (!menuData || !menuData.length) return {}
+
+        let root = {
+            name: 'root',
+            label: 'root',
+            url: '/',
+            selected: true,
+            children: menuData
         }
 
+        const modules = []
 
+        const decorate = (menu, url, depth, paths) => {
+            let o = {}
+
+
+
+
+            try {
+                o.name = menu.name
+                o.label = menu.name.toUpperCase()
+                o.depth = depth
+
+                if ((!menu.widget && !menu.gid) || menu.widget == 'MultipleModulesConfig') {  // is catagory
+                    o.cat = true
+                    o.url = menu.name == 'root' ? '' : (url + '/' + menu.name)
+
+                } else {
+                    o.url = url + '/' + menu.name
+                    o.isModule = true
+
+                    // save the module in an outter array
+                    modules.push(o)
+                }
+
+                let children = menu.modules || menu.children || []
+
+                if (children.length) {
+                    let selectedChild = children.find((itm) => { return itm.name === paths[0] })
+
+                    if (selectedChild) {
+                        o.selectedChild = selectedChild.name
+                        paths.shift()
+
+                    }
+                    o.children = children.map((itm) => { return decorate(itm, o.url, o.depth + 1, paths) })
+                }
+
+
+
+            } catch (error) {
+                console.error(error)
+            }
+
+            return o
+        }
+
+        /**
+         * setup module url to its parent catagories
+         */
+        const setupCatUrl = (menuData, modules) => {
+
+            const setup = (menu, url) => {
+
+                if (menu.cat && RegExp('^' + menu.url + '.+$').test(url) && !menu.selected) {
+                    menu.url = url
+                    menu.selected = true
+                }
+
+
+                _.castArray(menu.children || []).forEach((itm) => {
+                    setup(itm, url)
+                })
+            }
+
+            // 1st setup selectedPath 
+            setup(menuData, selectedPath)
+
+            // 2nd setup url of the first module of each catagory
+            modules.forEach(function (itm) {
+                setup(menuData, itm.url)
+            }, this);
+        }
+
+        const paths = ((selectedPath.match(/[^\/].+[^\/]/g) || [])[0] || '').split('/')
+
+        root = decorate(root, '', 0, paths)
+        setupCatUrl(root, modules)
+
+        console.log(root)
+
+        return root
     }
+
+
+
 
     render() {
 
@@ -81,48 +173,83 @@ class Nav extends React.PureComponent {
 
         const { location, menuData } = this.props
 
-        const paths = location.pathname.split('/').splice(1)
+        const menu = me.decorateMenuData(menuData, location.pathname)
 
-        _.castArray(menuData || []).forEach(function (itm) {
+        const renderMenu = (menu) => {
 
-        }, this)
+            if (!menu) return
 
-        const menu1st = (
-            <Menu>
-                {
-                    _.castArray(menuData || []).map((itm) => {
-                        return <Menu.Item key={itm.url} >{itm.name}</Menu.Item>
-                    })
-                }
-            </Menu>
-        )
 
-        return (
+            return (
+                <div>
+                    {
+                        menu.depth === 0 &&
+                        <Menu mode="horizontal">
+                            <SubMenu className={style.menuL1} title={<span><Icon type="setting" />{menu.selectedChild}</span>} >
 
-            // <Dropdown overlay={menu1st}>
-            //     <a href="javascript:;">
-            //         Menu1st <Icon type="down" />
-            //     </a>
-            // </Dropdown>
-            _.isArray(menuData) && menuData.length ?
+                                {
 
-                <Menu
-                    mode="horizontal"
-                >
-                    {me.renderMenu(menuData[0])}
-                    <Menu.Item key="app" disabled>
-                        <Icon type="appstore" />Navigation Two
-                </Menu.Item>
-                    <SubMenu title={<span><Icon type="setting" />Navigation Three - Submenu</span>}>
-                        <Menu.Item key="setting:1">Option 1</Menu.Item>
-                        <Menu.Item key="setting:2"><Link to='http://www.baidu.com'>dddddddDDD</Link></Menu.Item>
-                    </SubMenu>
+                                    (menu.children || []).map((itm) => {
+                                        return <Menu.Item
+                                            key={itm.name}
+                                            className={itm.url == location.pathname ? 'ant-menu-item-selected ant-menu-item' : ''}
+                                        >
+                                            <Link to={itm.url}>{itm.name}</Link>
+                                        </Menu.Item>
+                                    })
 
-                </Menu>
-                :
-                <div></div>
 
-        )
+                                }
+
+                            </SubMenu>
+                            {
+                                _.get((menu.children || []).find(itm => itm.name === menu.selectedChild), 'children', []).map((itm) => {
+                                    return <Menu.Item
+                                        className={itm.url == location.pathname ? 'ant-menu-item-selected ant-menu-item' : ''}
+                                        key={itm.name}
+                                    >
+                                        <Link to={itm.url}>{itm.name}</Link>
+                                    </Menu.Item>
+                                })
+
+
+                            }
+
+
+                        </Menu>
+                    }
+
+                    {
+                        menu.depth > 1 && menu.children &&
+                        < Menu mode="horizontal" style={{ height: 32 }}>
+                            {
+
+                                (menu.children || []).map((itm) => {
+                                    return <Menu.Item
+                                        style={{ height: 32, lineHeight: '32px' }}
+                                        key={itm.name}
+                                        className={itm.url == location.pathname ? 'ant-menu-item-selected ant-menu-item' : ''}
+                                    >
+                                        <Link to={itm.url}>{itm.name}</Link>
+                                    </Menu.Item>
+                                })
+
+
+                            }
+                        </Menu>
+                    }
+
+                    {renderMenu((menu.children || []).find(itm => itm.name === menu.selectedChild))}
+
+                </div >
+
+            )
+
+
+        }
+
+
+        return _.isArray(menuData) && menuData.length ? renderMenu(menu) : ''
     }
 
 }
