@@ -9,6 +9,8 @@ import api from '../api'
 
 import _ from 'lodash'
 
+import { extendNode } from '../services/Data';
+
 
 
 export default function* sagas() {
@@ -78,14 +80,25 @@ export default function* sagas() {
                 let res = yield call(api.statics, { url: itm.url })
                 statics[itm.entry] = res.result
             }
+
+            // generate gid_node_local
+            const { gid_node, macro_gid, macro_name, module_fields, conditions } = statics
+
+            if (gid_node && macro_gid && macro_name && module_fields && conditions) {
+                statics['gid_node_map'] = yield call(extendNode, gid_node, macro_gid, macro_name, module_fields, conditions)
+
+            }
             yield put({ type: `${GET_STATICS}/${SUCCESS}`, payload: statics })
 
             // generate menu_data
-            if (statics.menu_test && statics.menu_pieces) {
-                yield put(getMenu(statics.menu_test, statics.menu_pieces))
+            if (statics.menu && statics.menu_pieces) {
+                yield put(getMenu(statics.menu, statics.menu_pieces))
             } else {
                 console.error('menu generation failed')
             }
+
+
+
 
         } catch (e) {
             yield put({ type: `${GET_STATICS}/${FAILURE}`, payload: e })

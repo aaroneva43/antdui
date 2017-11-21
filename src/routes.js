@@ -15,6 +15,7 @@ import Users from './Users'
 export default (
     <div>
         <Switch>
+            {/* <Redirect from="/" to="/super_admin_system/administrator/admin" render={({ location }) => { return createElement(Main, { location }) }} /> */}
 
             <Route path="/" render={({ location }) => { return createElement(Main, { location }) }} >
                 {/* <IndexRoute component={SimpleForm} /> */}
@@ -29,7 +30,7 @@ export default (
 
             {/* <Route path="/slb/:id" exact render={({ history, location, match }) => { return createElement(Foo, { location }) }} />
         <Route path="/llb/@@new@@" exact render={({ history, location, match }) => { debugger; return createElement(Foo1, { location }) }} /> */}
-            <Redirect from="/" to="/super_admin_system/administrator/admin" />
+
         </Switch>
     </div>
 )

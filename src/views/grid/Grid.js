@@ -1,25 +1,21 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Link, Switch, Route, Redirect } from 'react-router-dom';
-import ReactTable from 'react-table';
-import request from 'superagent';
-// import { Container, Table, Button } from 'reactstrap';
-import { isEmpty } from '../../services/Utils';
-// import ModalConfig from '../../containers/ModalConfig/ModalConfig';
-import 'react-table/react-table.css';
+// import ReactTable from 'react-table';
+// import request from 'superagent';
+// import 'react-table/react-table.css';
 import { getModuleInfo } from '../../services/Data';
-import { AvailabilityCell, ActionsCell, CheckboxCell } from '../../services/Cells';
+// import { AvailabilityCell, ActionsCell, CheckboxCell } from '../../services/Cells';
 
 // redux stuff
-import { configEntryAdd, configEntryEdit, configEntryDone, configEntryReset } from '../../actions/processActions';
-import { connect } from 'react-redux';
+// import { configEntryAdd, configEntryEdit, configEntryDone, configEntryReset } from '../../actions/processActions';
+import { connect } from 'react-redux'
 
-@connect((store) => {
-    return {
-        store
-    };
-})
+import _ from 'lodash'
+import { Table, Button } from 'antd'
 
-class Grid extends Component {
+import { Action } from './Columns'
+
+class Grid extends PureComponent {
     constructor(props) {
         super(props);
         this.state = {
@@ -36,17 +32,21 @@ class Grid extends Component {
     }
 
     componentDidMount() {
-        const moduleInfo = getModuleInfo(this.props.gid, this.props.store.ConfigData);
-        this.setState({ gid: this.props.gid, moduleInfo: moduleInfo });
-        this.setColumns(moduleInfo.columns);
+
+        const { statics } = this.props
+        // const moduleInfo = getModuleInfo(this.props.gid, statics);
+        // this.setState({ gid: this.props.gid, moduleInfo: moduleInfo });
+        // this.setColumns(moduleInfo.columns);
         // this.fetchGrid('static/config_data/api/' + moduleInfo.module.modelName + '.json');
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.props.gid !== nextProps.gid) {
-            const moduleInfo = getModuleInfo(nextProps.gid, this.props.store.ConfigData);
-            this.setState({ gid: nextProps.gid, moduleInfo: moduleInfo });
-            this.setColumns(moduleInfo.columns);
+        const { statics } = this.props
+        if (this.props.gid !== nextProps.gid && !_.isEmpty(statics)) {
+            const moduleInfo = getModuleInfo(nextProps.gid, statics)
+
+            // this.setState({ gid: nextProps.gid, moduleInfo: moduleInfo });
+            this.setColumns(moduleInfo.columns)
             // this.fetchGrid('static/config_data/api/' + moduleInfo.module.modelName + '.json');
         }
     }
@@ -61,35 +61,52 @@ class Grid extends Component {
     //             } else {
     //                 this.setState({ data: res.body.payload });
     //             }
+
     //         });
     // }
 
     setColumns(cols) {
-        const that = this;
+        let me = this
 
-        if (typeof cols === 'undefined') return;
-
-        if (cols[0].cell !== 'checkbox') {
-            cols.unshift({ cell: 'checkbox' });
-        }
-        if (cols[cols.length - 1].cell !== 'actions') {
-            cols.push({ cell: 'actions' });
-        }
-
-        if (!isEmpty(cols)) {
-            let colsList = cols.map(function (col) {
-                if (col.cell === 'checkbox') {
-                    return CheckboxCell.call(that);
-                } else if (col.cell === 'actions') {
-                    return ActionsCell();
+        if (cols) {
+            let columns = cols.map(function (col) {
+                if (col.cell === 'actions') {
+                    return Action.call(me)
                 } else if (col.cell === 'availability') {
-                    return AvailabilityCell();
+                    // return AvailabilityCell();
                 } else {
-                    return { Header: col.label, accessor: col.name };
+                    return { title: col.label, dataIndex: col.name };
                 }
             });
-            this.setState({ columns: colsList });
+            this.setState({ columns });
         }
+
+        return []
+        // const that = this;
+
+        // if (typeof cols === 'undefined') return;
+
+        // if (cols[0].cell !== 'checkbox') {
+        //     cols.unshift({ cell: 'checkbox' });
+        // }
+        // if (cols[cols.length - 1].cell !== 'actions') {
+        //     cols.push({ cell: 'actions' });
+        // }
+
+        // if (cols) {
+        //     let colsList = cols.map(function (col) {
+        //         if (col.cell === 'checkbox') {
+        //             // return CheckboxCell.call(that);
+        //         } else if (col.cell === 'actions') {
+        //             // return ActionsCell();
+        //         } else if (col.cell === 'availability') {
+        //             // return AvailabilityCell();
+        //         } else {
+        //             return { Header: col.label, accessor: col.name };
+        //         }
+        //     });
+        //     this.setState({ columns: colsList });
+        // }
     }
 
     toggleRow(firstName) {
@@ -102,43 +119,95 @@ class Grid extends Component {
     }
 
     toggleSelectAll() {
-        let newSelected = {};
+        // let newSelected = {};
 
-        if (this.state.selectAll === 0) {
-            this.state.data.forEach(x => {
-                newSelected[x.mkey] = true;
-            });
-        }
+        // if (this.state.selectAll === 0) {
+        //     this.state.data.forEach(x => {
+        //         newSelected[x.mkey] = true;
+        //     });
+        // }
 
-        this.setState({
-            selected: newSelected,
-            selectAll: this.state.selectAll === 0 ? 1 : 0
-        });
+        // this.setState({
+        //     selected: newSelected,
+        //     selectAll: this.state.selectAll === 0 ? 1 : 0
+        // });
     }
 
     handleOnAdd(gid) {
         // pass obj with gid
-        this.props.configEntryAdd({ gid: gid, modalType: 'form' });
+        // this.props.configEntryAdd({ gid: gid, modalType: 'form' });
+    }
+
+    handleChange = (pagination, filters, sorter) => {
+        console.log('Various parameters', pagination, filters, sorter);
+        this.setState({
+            filteredInfo: filters,
+            sortedInfo: sorter,
+        });
     }
 
     render() {
-        if (!this.state.columns.length) return (<div />);
+
+        const { columns } = this.state
+
+        // if (_.isEmpty(columns)) return (<div />)
+
+        // const columns = [{
+        //     title: 'Name',
+        //     dataIndex: 'name',
+        //     render: text => <a href="#">{text}</a>,
+        // }, {
+        //     title: 'Age',
+        //     dataIndex: 'age',
+        // }, {
+        //     title: 'Address',
+        //     dataIndex: 'address',
+        // }];
+        const data = [{
+            key: '1',
+            name: 'John Brown',
+            age: 32,
+            address: 'New York No. 1 Lake Park',
+        }, {
+            key: '2',
+            name: 'Jim Green',
+            age: 42,
+            address: 'London No. 1 Lake Park',
+        }, {
+            key: '3',
+            name: 'Joe Black',
+            age: 32,
+            address: 'Sidney No. 1 Lake Park',
+        }, {
+            key: '4',
+            name: 'Disabled User',
+            age: 99,
+            address: 'Sidney No. 1 Lake Park',
+        }];
+
+        // rowSelection object indicates the need for row selection
+        const rowSelection = {
+            onChange: (selectedRowKeys, selectedRows) => {
+                console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+            }
+        };
 
         return (
             <div className="grid-page">
                 <div className="header clearfix">
                     <div className="pull-left">
-                        <Button outline color="primary" onClick={this.handleOnAdd.bind(this, this.state.moduleInfo.module.gid)}><i className="fa fa-plus"></i> Add</Button>{' '}
+                        {/* <Button outline color="primary" onClick={this.handleOnAdd.bind(this, this.state.moduleInfo.module.gid)}><i className="fa fa-plus"></i> Add</Button>{' '}
                         <Button outline color="primary"><i className="fa fa-times"></i> Delete</Button>{' '}
-                        <Button outline color="primary"><i className="fa fa-refresh"></i> Refresh</Button>
+                        <Button outline color="primary"><i className="fa fa-refresh"></i> Refresh</Button> */}
                     </div>
                 </div>
                 <div className="table">
-                    <ReactTable
+                    <Table bordered rowSelection={rowSelection} columns={columns} dataSource={data} onChange={this.handleChange} />
+                    {/* <ReactTable
                         data={this.state.data}
                         columns={this.state.columns}
                         defaultPageSize={10}
-                    />
+                    /> */}
                 </div>
                 {/* <ModalConfig /> */}
             </div>
@@ -146,5 +215,11 @@ class Grid extends Component {
     }
 }
 
-export default connect(null, { configEntryAdd, configEntryEdit, configEntryDone, configEntryReset })(Grid);
+export default connect(
+    (state) => {
+
+        return { statics: _.get(state, 'statics') }
+    },
+    { /* configEntryAdd, configEntryEdit, configEntryDone, configEntryReset */ })(Grid);
+
 // export default Grid;

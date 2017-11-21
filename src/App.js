@@ -46,10 +46,17 @@ sagaMiddleware.run(sagas)
 // load statics
 store.dispatch(
   getStatics([
-    // 'statics/config_data/manual/menu.json',
-    'statics/config_data/manual/menu_test.json',
-    'statics/config_data/manual/menu_pieces.json'
+    'statics/config_data/manual/menu.json',
+    'statics/config_data/manual/menu_pieces.json',
+    'statics/config_data/scanned/gid_node.json',
+    'statics/config_data/scanned/macro_gid.json',
+    'statics/config_data/scanned/macro_name.json',
+    'statics/config_data/scanned/module_fields.json',
+    'statics/config_data/scanned/conditions.json',
+    'statics/config_data/saved/Specifics.json',
+    'statics/config_data/scanned/gid_macro.json'
   ])
+
 )
 
 class App extends Component {
