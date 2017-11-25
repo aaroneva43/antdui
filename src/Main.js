@@ -13,7 +13,8 @@ import { Route, IndexRoute, Redirect, Switch } from 'react-router';
 
 import { getGidByPath } from './services/Data'
 
-import Grid from './views/grid/Grid'
+import Grid from './containers/grid/Grid'
+import ModalConfig from './containers/modal/ModalConfig'
 
 
 
@@ -84,21 +85,26 @@ class Main extends Component {
       <div >
         {(auth.pending) && <GlobalMask size='large' />}
         {
-          (!auth.pending && !auth.authed) ?
-            <Login /> :
-            <div>
-              <Nav
-                location={location}
-                menuData={menu}
-              />
+          (!auth.pending && !auth.authed) &&
+          <Login />
 
-              <Switch>
-                <Redirect from="/" exact to={defaultPath} render={({ location }) => { return createElement(Grid, { gid }) }} />
 
-                <Route path="/" render={({ location }) => { return createElement(Grid, { gid }) }} />
+        }
+        {
+          (!auth.pending && auth.authed) &&
+          <div>
+            <Nav
+              location={location}
+              menuData={menu}
+            />
 
-              </Switch>
-            </div>
+            <Switch>
+              <Redirect from="/" exact to={defaultPath} render={({ location }) => { return createElement(Grid, { gid }) }} />
+
+              <Route path="/" render={({ location }) => { return createElement(Grid, { gid }) }} />
+              <Route path="/" render={({ location }) => { return createElement(Grid, { gid }) }} />
+            </Switch>
+          </div>
         }
 
       </div>

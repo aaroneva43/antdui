@@ -11,9 +11,13 @@ import { getModuleInfo } from '../../services/Data';
 import { connect } from 'react-redux'
 
 import _ from 'lodash'
-import { Table, Button } from 'antd'
+import { Table, Button, Icon } from 'antd'
 
 import { Action } from './Columns'
+
+import style from './Grid.css'
+
+import { configEntry } from '../../actions'
 
 class Grid extends PureComponent {
     constructor(props) {
@@ -33,15 +37,18 @@ class Grid extends PureComponent {
 
     componentDidMount() {
 
-        const { statics } = this.props
-        // const moduleInfo = getModuleInfo(this.props.gid, statics);
-        // this.setState({ gid: this.props.gid, moduleInfo: moduleInfo });
-        // this.setColumns(moduleInfo.columns);
+        const { statics, gid } = this.props
+        const moduleInfo = getModuleInfo(gid, statics);
+
+        this.setState({ gid, moduleInfo: moduleInfo });
+        this.setColumns(moduleInfo.columns)
+
         // this.fetchGrid('static/config_data/api/' + moduleInfo.module.modelName + '.json');
     }
 
     componentWillReceiveProps(nextProps) {
         const { statics } = this.props
+
         if (this.props.gid !== nextProps.gid && !_.isEmpty(statics)) {
             const moduleInfo = getModuleInfo(nextProps.gid, statics)
 
@@ -65,13 +72,44 @@ class Grid extends PureComponent {
     //         });
     // }
 
+    handleOnForm(event, record, index) {
+        const { configEntry } = this.props
+
+        const action = event.target.getAttribute('action')
+
+        configEntry(action || 'create', _.merge({ gid: 22 }, action == 'edit' ? record : {}))
+
+
+    }
+    deleteRow() { }
+
     setColumns(cols) {
         let me = this
 
         if (cols) {
             let columns = cols.map(function (col) {
-                if (col.cell === 'actions') {
-                    return Action.call(me)
+                if (col.cell === 'action') {
+                    return {
+                        render: ({ text, record }) => {
+
+                            return (
+                                <span className={style.actionWrapper}>
+                                    <span title="Edit" >
+                                        <Icon type="edit" action="edit" className={style.actionIcon} />
+                                    </span>
+                                    <span title="Delete">
+                                        <Icon type="delete" className={style.actionIcon} onClick={me.deleteRow} />
+                                    </span>
+                                    <span title="Copy">
+                                        <Icon type="copy" className={style.actionIcon} />
+                                    </span>
+                                </span>
+                            );
+                        },
+                        title: '',
+                        sortable: false,
+                        width: 75
+                    }
                 } else if (col.cell === 'availability') {
                     // return AvailabilityCell();
                 } else {
@@ -148,9 +186,12 @@ class Grid extends PureComponent {
 
     render() {
 
-        const { columns } = this.state
+        const me = this
 
-        // if (_.isEmpty(columns)) return (<div />)
+        const { columns } = this.state
+        const { gid } = this.props
+
+        // if (_.isEmpty(columns) || _.isEmpty(gid)) return (<div />)
 
         // const columns = [{
         //     title: 'Name',
@@ -163,27 +204,12 @@ class Grid extends PureComponent {
         //     title: 'Address',
         //     dataIndex: 'address',
         // }];
-        const data = [{
-            key: '1',
-            name: 'John Brown',
-            age: 32,
-            address: 'New York No. 1 Lake Park',
-        }, {
-            key: '2',
-            name: 'Jim Green',
-            age: 42,
-            address: 'London No. 1 Lake Park',
-        }, {
-            key: '3',
-            name: 'Joe Black',
-            age: 32,
-            address: 'Sidney No. 1 Lake Park',
-        }, {
-            key: '4',
-            name: 'Disabled User',
-            age: 99,
-            address: 'Sidney No. 1 Lake Park',
-        }];
+        const data = [
+            { "mkey": "admin", "passwd": "$1$61c82717$nxiwMC7FXoJIpcuqfFgty0", "theme": "", "trusted-host": "0.0.0.0\/0 ::\/0 ", "auth_stratgey": "local", "auth_radius_server_id": "", "auth_ldap_server_id": "", "profile": "super_admin_prof", "hidden": 0, "vdom": "root ", "is-system-admin": "yes", "wildcard": "disable", "_nondeletable": 1, "_noneditable": 0 },
+            { "mkey": "seuser", "passwd": "$1$5712703e$AHawn.D\/RO1TEhFI9ekIA0", "theme": "", "trusted-host": "0.0.0.0\/0 ::\/0 ", "auth_stratgey": "local", "auth_radius_server_id": "", "auth_ldap_server_id": "", "profile": "seuser", "hidden": 0, "vdom": "root ", "is-system-admin": "no", "wildcard": "disable", "_nondeletable": 0, "_noneditable": 0 },
+            { "mkey": "demo", "passwd": "$1$dd47a1cc$Dkh1HY.X2ZYEsiAV24Rwt\/", "theme": "", "trusted-host": "0.0.0.0\/0 ::\/0 ", "auth_stratgey": "radius", "auth_radius_server_id": "HA_FAC", "auth_ldap_server_id": "", "profile": "demo", "hidden": 0, "vdom": "root ", "is-system-admin": "no", "wildcard": "disable", "_nondeletable": 0, "_noneditable": 0 },
+            { "mkey": "erezy", "passwd": "$1$9ec15b29$IqAjijAIEMci5mqQaXCla0", "theme": "", "trusted-host": "0.0.0.0\/0 ::\/0 ", "auth_stratgey": "local", "auth_radius_server_id": "", "auth_ldap_server_id": "", "profile": "erez", "hidden": 0, "vdom": "root ", "is-system-admin": "no", "wildcard": "disable", "_nondeletable": 0, "_noneditable": 0 }
+        ]
 
         // rowSelection object indicates the need for row selection
         const rowSelection = {
@@ -193,22 +219,33 @@ class Grid extends PureComponent {
         };
 
         return (
-            <div className="grid-page">
-                <div className="header clearfix">
-                    <div className="pull-left">
-                        {/* <Button outline color="primary" onClick={this.handleOnAdd.bind(this, this.state.moduleInfo.module.gid)}><i className="fa fa-plus"></i> Add</Button>{' '}
-                        <Button outline color="primary"><i className="fa fa-times"></i> Delete</Button>{' '}
-                        <Button outline color="primary"><i className="fa fa-refresh"></i> Refresh</Button> */}
-                    </div>
+            <div className={style.gridPage}>
+                <div className={style.toolbar}>
+                    <Button action="create" icon="file-add" onClick={me.handleOnForm.bind(me)}> Add</Button>
+                    <Button action="delete" icon="delete" color="primary"> Delete</Button>
+                    <Button action="reload" icon="reload" color="primary"> Refresh</Button>
                 </div>
+
                 <div className="table">
-                    <Table bordered rowSelection={rowSelection} columns={columns} dataSource={data} onChange={this.handleChange} />
+                    <Table
+
+
+                        rowKey='mkey'
+                        onRowClick={(record, index, event) => { me.handleOnForm(event, record, index) }}
+                        bordered
+                        rowSelection={rowSelection}
+                        columns={columns}
+                        dataSource={data}
+                        onChange={this.handleChange}
+                        pagination={{ pageSize: 2 }}
+                    />
                     {/* <ReactTable
                         data={this.state.data}
                         columns={this.state.columns}
                         defaultPageSize={10}
                     /> */}
                 </div>
+
                 {/* <ModalConfig /> */}
             </div>
         );
@@ -220,6 +257,6 @@ export default connect(
 
         return { statics: _.get(state, 'statics') }
     },
-    { /* configEntryAdd, configEntryEdit, configEntryDone, configEntryReset */ })(Grid);
+    { configEntry })(Grid);
 
 // export default Grid;

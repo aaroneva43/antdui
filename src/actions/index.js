@@ -11,3 +11,15 @@ export const getConfig = (url) => ({
         entry: url
     }
 })
+
+/**
+ * 
+ * @param {String} type 'create'/'edit'
+ * @param {Object} cfg ex. {gid: 123, data: {name:'xx', ...}}
+ */
+export const configEntry = (type, cfg) => {
+    return {
+        type: type == 'edit' ? actions.CONFIG_ENTRY_EDIT : actions.CONFIG_ENTRY_ADD,
+        payload: cfg
+    }
+}

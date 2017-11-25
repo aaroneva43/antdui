@@ -22,6 +22,7 @@ function isAuthorized(req) {
 function start() {
     const app = jsonServer.create();
     app.use(middlewares);
+    app.use(bodyParser.json());
 
 
     app.use(function (req, res, next) {
@@ -43,7 +44,7 @@ function start() {
 
     app.post('/api/v1/auth', function (req, res) {
         if (req.body.token == '7xPJPuVfTse2pFHc5Pfu') {
-            res.send({ success: true, result: {} })
+            setTimeout(() => { res.send({ success: true, result: {} }) }, 800)
         } else {
             setTimeout(() => { res.send({ success: false, result: {} }) }, 800)
         }

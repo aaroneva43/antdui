@@ -1,4 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
+
+import { Icon } from 'antd'
+import style from './Grid.css'
+
 
 export function Availability() {
     return {
@@ -18,21 +22,24 @@ export function Availability() {
 export function Action(cols) {
     return {
         render: ({ scope }) => {
+            debugger
             return (
-                <span>
-                    <span title="Edit">
-                        <i className="fa fa-pencil" onClick={this.handleOnForm.bind(this, scope, 'edit')} ></i>
+                <span className={style.actionWrapper}>
+                    <span title="Edit" >
+                        <Icon type="edit" action="edit" className={style.actionIcon} onClick={this.handleOnForm.bind(this, scope)} />
+                        {/* <i className="" onClick={this.handleOnForm.bind(this, suope, 'edit')} ></i> */}
                     </span>{' '}
                     <span title="Delete">
-                        <i className="fa fa-times" onClick={this.deleteRow.bind(this, scope)}></i>
+                        <Icon type="delete" className={style.actionIcon} onClick={this.deleteRow.bind(this, scope, 'edit')} />
+                        {/* <i className="" onClick={this.deleteRow.bind(this, scope)}></i> */}
                     </span>{' '}
                     <span title="Copy">
-                        <i className="fa fa-copy"></i>
+                        <Icon type="copy" className={style.actionIcon} />
                     </span>{' '}
                 </span>
             );
         },
-        title: 33333,
+        title: '',
         sortable: false,
         width: 75
     }

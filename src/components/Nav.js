@@ -89,8 +89,9 @@ class Nav extends React.PureComponent {
 
 
             try {
-                o.name = menu.name
-                o.label = menu.name.toUpperCase()
+
+                _.extend(o, _.omit(menu, 'modules', 'children'))
+
                 o.depth = depth
 
                 if ((!menu.widget && !menu.gid) || menu.widget == 'MultipleModulesConfig') {  // is catagory
@@ -112,6 +113,7 @@ class Nav extends React.PureComponent {
 
                     if (selectedChild) {
                         o.selectedChild = selectedChild.name
+                        o.selectedChildText = selectedChild.text
                         paths.shift()
 
                     }
@@ -181,11 +183,11 @@ class Nav extends React.PureComponent {
 
 
             return (
-                <div>
+                <div >
                     {
                         menu.depth === 0 &&
-                        <Menu mode="horizontal">
-                            <SubMenu className={style.menuL1} title={<span><Icon type="setting" />{menu.selectedChild}</span>} >
+                        <Menu mode="horizontal" className={style.Nav}>
+                            <SubMenu className={style.menuL1} title={<span><Icon type="setting" />{menu.selectedChildText}</span>} >
 
                                 {
 
@@ -194,7 +196,7 @@ class Nav extends React.PureComponent {
                                             key={itm.name}
                                             className={itm.url == location.pathname ? 'ant-menu-item-selected ant-menu-item' : ''}
                                         >
-                                            <Link to={itm.url}>{itm.name}</Link>
+                                            <Link to={itm.url}>{itm.text}</Link>
                                         </Menu.Item>
                                     })
 
@@ -208,7 +210,7 @@ class Nav extends React.PureComponent {
                                         className={itm.url == location.pathname ? 'ant-menu-item-selected ant-menu-item' : ''}
                                         key={itm.name}
                                     >
-                                        <Link to={itm.url}>{itm.name}</Link>
+                                        <Link to={itm.url}>{itm.text}</Link>
                                     </Menu.Item>
                                 })
 
@@ -230,7 +232,7 @@ class Nav extends React.PureComponent {
                                         key={itm.name}
                                         className={itm.url == location.pathname ? 'ant-menu-item-selected ant-menu-item' : ''}
                                     >
-                                        <Link to={itm.url}>{itm.name}</Link>
+                                        <Link to={itm.url}>{itm.text}</Link>
                                     </Menu.Item>
                                 })
 
